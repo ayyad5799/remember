@@ -1,0 +1,1195 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
+<meta name="theme-color" content="#0b0f1a"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="نُخبة"/>
+<link rel="manifest" href="manifest.json"/>
+<title>نُخبة</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800;900&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#0b0f1a;
+  --s1:#111827;
+  --s2:#1a2235;
+  --s3:#222d42;
+  --border:#2a3650;
+  --gold:#c9a84c;
+  --gold2:#f0c96e;
+  --teal:#0ea5e9;
+  --green:#10b981;
+  --red:#ef4444;
+  --orange:#f97316;
+  --purple:#8b5cf6;
+  --text:#e2e8f0;
+  --muted:#64748b;
+  --muted2:#94a3b8;
+  --r:14px;
+  --r2:10px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden;font-family:'Tajawal',sans-serif;background:var(--bg);color:var(--text)}
+/* ─── LAYOUT ─── */
+#app{display:flex;flex-direction:column;height:100vh;height:100dvh}
+.topbar{
+  background:linear-gradient(135deg,#0d1320 0%,#111827 100%);
+  border-bottom:1px solid var(--border);
+  padding:12px 16px 10px;
+  flex-shrink:0;
+  position:relative;
+}
+.topbar::after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,var(--gold),transparent)}
+.topbar-inner{display:flex;align-items:center;justify-content:space-between}
+.logo{font-size:1.25rem;font-weight:900;letter-spacing:-0.5px;line-height:1}
+.logo span{color:var(--gold)}
+.logo small{display:block;font-size:0.65rem;font-weight:400;color:var(--muted);margin-top:2px;letter-spacing:0.05em}
+.topbar-actions{display:flex;gap:8px}
+.tba{background:var(--s2);border:1px solid var(--border);color:var(--muted2);
+  width:36px;height:36px;border-radius:10px;font-size:1rem;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.15s}
+.tba:hover{border-color:var(--gold);color:var(--gold)}
+
+.content{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;
+  scrollbar-width:thin;scrollbar-color:var(--border) transparent}
+.content::-webkit-scrollbar{width:3px}
+.content::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px}
+
+/* ─── BOTTOM NAV ─── */
+.bottomnav{
+  display:flex;background:var(--s1);border-top:1px solid var(--border);
+  padding:6px 0 max(6px,env(safe-area-inset-bottom));flex-shrink:0
+}
+.navitem{
+  flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;
+  padding:6px 4px;cursor:pointer;transition:.15s;border:none;background:none;
+  color:var(--muted);font-family:'Tajawal',sans-serif
+}
+.navitem .ni{font-size:1.3rem;transition:.2s}
+.navitem .nl{font-size:0.6rem;font-weight:600}
+.navitem.active{color:var(--gold)}
+.navitem.active .ni{transform:translateY(-2px)}
+.navitem .badge{
+  position:absolute;top:-4px;right:-4px;background:var(--red);color:#fff;
+  font-size:0.55rem;font-weight:800;padding:1px 4px;border-radius:6px;
+  min-width:16px;text-align:center;display:none
+}
+.navitem .ni-wrap{position:relative;display:inline-block}
+
+/* ─── PAGES ─── */
+.page{display:none;padding:16px}
+.page.active{display:block}
+
+/* ─── SECTION HEADERS ─── */
+.sec-head{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:12px
+}
+.sec-title{font-size:0.75rem;font-weight:700;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+.sec-btn{
+  background:var(--gold);color:#000;border:none;padding:6px 14px;
+  border-radius:8px;font-family:'Tajawal',sans-serif;font-weight:700;
+  font-size:0.78rem;cursor:pointer;display:flex;align-items:center;gap:5px;transition:.15s
+}
+.sec-btn:hover{background:var(--gold2)}
+.sec-btn.outline{background:transparent;border:1px solid var(--border);color:var(--muted2)}
+.sec-btn.outline:hover{border-color:var(--gold);color:var(--gold)}
+
+/* ─── DASHBOARD STATS ─── */
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+.stat-card{
+  background:var(--s2);border:1px solid var(--border);border-radius:var(--r);
+  padding:14px 12px;position:relative;overflow:hidden
+}
+.stat-card::before{
+  content:'';position:absolute;top:0;right:0;width:3px;height:100%;
+  border-radius:0 var(--r) var(--r) 0
+}
+.stat-card.gold::before{background:var(--gold)}
+.stat-card.teal::before{background:var(--teal)}
+.stat-card.green::before{background:var(--green)}
+.stat-card.red::before{background:var(--red)}
+.stat-card.orange::before{background:var(--orange)}
+.stat-num{font-size:2rem;font-weight:900;line-height:1;margin-bottom:4px}
+.stat-card.gold .stat-num{color:var(--gold)}
+.stat-card.teal .stat-num{color:var(--teal)}
+.stat-card.green .stat-num{color:var(--green)}
+.stat-card.red .stat-num{color:var(--red)}
+.stat-card.orange .stat-num{color:var(--orange)}
+.stat-label{font-size:0.72rem;color:var(--muted);font-weight:500}
+.stat-sub{font-size:0.65rem;color:var(--muted);margin-top:2px}
+
+/* ─── ALERT CARDS ─── */
+.alert-card{
+  background:var(--s2);border:1px solid var(--border);border-radius:var(--r);
+  padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;gap:12px;
+  animation:fadeIn .3s ease
+}
+.alert-card.urgent{border-color:rgba(239,68,68,.4);background:rgba(239,68,68,.07)}
+.alert-card.warn{border-color:rgba(249,115,22,.4);background:rgba(249,115,22,.07)}
+.alert-card.info{border-color:rgba(14,165,233,.3);background:rgba(14,165,233,.05)}
+.alert-icon{font-size:1.5rem;flex-shrink:0}
+.alert-body{flex:1;min-width:0}
+.alert-title{font-size:0.85rem;font-weight:700;margin-bottom:2px}
+.alert-sub{font-size:0.72rem;color:var(--muted)}
+.alert-action{
+  background:var(--s3);border:1px solid var(--border);color:var(--muted2);
+  padding:4px 10px;border-radius:7px;font-family:'Tajawal',sans-serif;
+  font-size:0.72rem;font-weight:600;cursor:pointer;white-space:nowrap;transition:.15s
+}
+.alert-action:hover{border-color:var(--gold);color:var(--gold)}
+
+/* ─── CARDS (units/items) ─── */
+.card{
+  background:var(--s2);border:1px solid var(--border);border-radius:var(--r);
+  padding:14px;margin-bottom:10px;animation:fadeIn .3s ease;position:relative
+}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.card-head{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px}
+.card-name{font-size:0.95rem;font-weight:800;line-height:1.3}
+.card-sub{font-size:0.72rem;color:var(--muted);margin-top:2px}
+.card-acts{display:flex;gap:6px}
+.cta{
+  background:var(--s3);border:1px solid var(--border);color:var(--muted2);
+  width:30px;height:30px;border-radius:8px;font-size:0.8rem;
+  display:flex;align-items:center;justify-content:center;cursor:pointer;transition:.15s;border:none
+}
+.cta:hover{border-color:var(--gold)!important;color:var(--gold)}
+.cta.del:hover{border-color:var(--red)!important;color:var(--red)}
+
+.tags{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:8px}
+.tag{
+  font-size:0.68rem;font-weight:600;padding:3px 9px;border-radius:20px;
+  background:rgba(255,255,255,.05);color:var(--muted2)
+}
+.tag.gold{background:rgba(201,168,76,.15);color:var(--gold)}
+.tag.green{background:rgba(16,185,129,.12);color:var(--green)}
+.tag.red{background:rgba(239,68,68,.12);color:var(--red)}
+.tag.orange{background:rgba(249,115,22,.12);color:var(--orange)}
+.tag.teal{background:rgba(14,165,233,.12);color:var(--teal)}
+.tag.purple{background:rgba(139,92,246,.12);color:var(--purple)}
+
+/* Progress bar */
+.prog-wrap{margin-top:6px}
+.prog-label{display:flex;justify-content:space-between;font-size:0.68rem;color:var(--muted);margin-bottom:4px}
+.prog-bar{height:5px;background:var(--s3);border-radius:3px;overflow:hidden}
+.prog-fill{height:100%;border-radius:3px;transition:.5s}
+
+/* ─── INVENTORY ITEM ─── */
+.inv-item{
+  background:var(--s2);border:1px solid var(--border);border-radius:var(--r2);
+  padding:12px 14px;margin-bottom:8px;display:flex;align-items:center;gap:10px
+}
+.inv-icon{font-size:1.4rem;flex-shrink:0;width:36px;text-align:center}
+.inv-body{flex:1;min-width:0}
+.inv-name{font-size:0.88rem;font-weight:700}
+.inv-meta{font-size:0.7rem;color:var(--muted);margin-top:2px}
+.inv-right{text-align:center;flex-shrink:0}
+.inv-qty{font-size:1.3rem;font-weight:900}
+.inv-unit{font-size:0.6rem;color:var(--muted)}
+.qty-ctrl{display:flex;align-items:center;gap:6px;margin-top:4px}
+.qbtn{
+  background:var(--s3);border:1px solid var(--border);color:var(--text);
+  width:24px;height:24px;border-radius:6px;font-size:0.9rem;font-weight:700;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.15s
+}
+.qbtn:hover{background:var(--gold);border-color:var(--gold);color:#000}
+
+/* ─── MAINTENANCE ─── */
+.maint-item{
+  background:var(--s2);border:1px solid var(--border);border-radius:var(--r);
+  padding:13px 14px;margin-bottom:8px;position:relative;overflow:hidden
+}
+.maint-item.done{opacity:.5}
+.maint-stripe{position:absolute;right:0;top:0;bottom:0;width:3px}
+.maint-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px}
+.maint-name{font-size:0.9rem;font-weight:700}
+.maint-done-btn{
+  background:transparent;border:1px solid var(--border);color:var(--muted);
+  padding:3px 10px;border-radius:7px;font-family:'Tajawal',sans-serif;
+  font-size:0.7rem;cursor:pointer;transition:.15s
+}
+.maint-done-btn:hover,.maint-done-btn.done{background:var(--green);border-color:var(--green);color:#fff}
+.maint-meta{font-size:0.72rem;color:var(--muted);display:flex;gap:10px;flex-wrap:wrap}
+
+/* ─── MODAL ─── */
+.overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,.75);backdrop-filter:blur(6px);
+  z-index:999;display:none;align-items:flex-end;justify-content:center
+}
+.overlay.open{display:flex}
+.modal{
+  background:var(--s1);border:1px solid var(--border);
+  border-radius:22px 22px 0 0;width:100%;max-width:520px;
+  padding:20px 18px max(24px,env(safe-area-inset-bottom));
+  max-height:88vh;overflow-y:auto;animation:slideUp .3s ease
+}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.modal-handle{width:36px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 18px}
+.modal-title{font-size:1.1rem;font-weight:800;margin-bottom:16px;text-align:center}
+
+/* form */
+.f{margin-bottom:13px}
+.f label{display:block;font-size:0.78rem;font-weight:600;color:var(--muted);margin-bottom:5px}
+.f input,.f select,.f textarea{
+  width:100%;background:var(--s2);border:1px solid var(--border);
+  color:var(--text);padding:10px 13px;border-radius:10px;
+  font-family:'Tajawal',sans-serif;font-size:0.88rem;outline:none;transition:.15s
+}
+.f input:focus,.f select:focus,.f textarea:focus{border-color:var(--gold)}
+.f textarea{resize:vertical;min-height:65px}
+.f select option{background:var(--s2)}
+.f-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.f-hint{font-size:0.68rem;color:var(--muted);margin-top:4px}
+
+.btn-save{
+  width:100%;background:linear-gradient(135deg,var(--gold),#e6b84a);
+  color:#000;border:none;padding:13px;border-radius:12px;
+  font-family:'Tajawal',sans-serif;font-weight:800;font-size:0.95rem;
+  cursor:pointer;margin-top:6px;transition:.15s
+}
+.btn-save:hover{opacity:.9}
+.btn-row{display:flex;gap:8px}
+.btn-row .btn-save{flex:1}
+.btn-cancel{
+  background:var(--s2);border:1px solid var(--border);color:var(--muted2);
+  padding:13px 20px;border-radius:12px;font-family:'Tajawal',sans-serif;
+  font-weight:700;font-size:0.88rem;cursor:pointer;transition:.15s
+}
+.btn-cancel:hover{border-color:var(--red);color:var(--red)}
+
+/* ─── SEARCH ─── */
+.search-wrap{position:relative;margin-bottom:12px}
+.search-wrap input{
+  width:100%;background:var(--s2);border:1px solid var(--border);
+  color:var(--text);padding:10px 13px 10px 36px;border-radius:10px;
+  font-family:'Tajawal',sans-serif;font-size:0.85rem;outline:none
+}
+.search-wrap::before{
+  content:'🔍';position:absolute;left:10px;top:50%;transform:translateY(-50%);
+  font-size:0.9rem;pointer-events:none
+}
+
+/* ─── TABS ─── */
+.tabs{display:flex;gap:6px;margin-bottom:14px;overflow-x:auto;scrollbar-width:none;padding-bottom:2px}
+.tabs::-webkit-scrollbar{display:none}
+.tab{
+  background:var(--s2);border:1px solid var(--border);color:var(--muted);
+  padding:7px 14px;border-radius:20px;font-family:'Tajawal',sans-serif;
+  font-size:0.78rem;font-weight:600;cursor:pointer;white-space:nowrap;transition:.15s
+}
+.tab.active{background:var(--gold);border-color:var(--gold);color:#000}
+
+/* ─── EMPTY ─── */
+.empty{text-align:center;padding:48px 20px;color:var(--muted)}
+.empty-icon{font-size:2.8rem;margin-bottom:10px;opacity:.4}
+.empty h3{font-size:1rem;color:var(--text);opacity:.5;margin-bottom:6px}
+.empty p{font-size:0.8rem;line-height:1.6}
+
+/* ─── REPORTS ─── */
+.report-card{
+  background:var(--s2);border:1px solid var(--border);border-radius:var(--r);
+  padding:16px;margin-bottom:10px
+}
+.report-title{font-size:0.85rem;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.bar-chart{display:flex;flex-direction:column;gap:8px}
+.bar-row{display:flex;align-items:center;gap:8px}
+.bar-label{font-size:0.7rem;color:var(--muted);width:70px;text-align:right;flex-shrink:0}
+.bar-track{flex:1;height:6px;background:var(--s3);border-radius:3px;overflow:hidden}
+.bar-fill{height:100%;border-radius:3px;transition:width .8s ease}
+.bar-val{font-size:0.7rem;font-weight:700;color:var(--gold);width:30px;text-align:left;flex-shrink:0}
+
+/* ─── INSTALL BANNER ─── */
+.install-banner{
+  background:rgba(201,168,76,.08);border:1px solid rgba(201,168,76,.25);
+  border-radius:12px;padding:10px 14px;margin-bottom:12px;
+  display:flex;align-items:center;gap:10px;font-size:0.8rem
+}
+.install-banner button{
+  background:var(--gold);color:#000;border:none;padding:5px 12px;
+  border-radius:7px;font-family:'Tajawal',sans-serif;font-weight:700;
+  font-size:0.75rem;cursor:pointer;margin-right:auto;white-space:nowrap
+}
+
+/* ─── MISC ─── */
+.divider{height:1px;background:var(--border);margin:14px 0;opacity:.5}
+.pb16{padding-bottom:16px}
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- TOP BAR -->
+  <div class="topbar">
+    <div class="topbar-inner">
+      <div class="logo">نُ<span>خبة</span><small>نُخبة المفروشات للفنادق</small></div>
+      <div class="topbar-actions">
+        <div class="tba" onclick="openModal('notifModal')" title="إشعارات" id="notifBtn">🔔</div>
+        <div class="tba" onclick="openModal('settingsModal')" title="إعدادات">⚙️</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="content" id="content">
+
+    <!-- PAGE: DASHBOARD -->
+    <div class="page active" id="page-dash">
+      <div style="padding:16px">
+        <div id="installBanner" style="display:none" class="install-banner">
+          <span>📲 ثبّت التطبيق على شاشتك الرئيسية</span>
+          <button id="installBtn">ثبّت</button>
+        </div>
+
+        <div class="stats-grid" id="dashStats"></div>
+
+        <div class="sec-head">
+          <div class="sec-title">🚨 تنبيهات عاجلة</div>
+          <div class="sec-btn outline" onclick="navTo('inv')">عرض الكل</div>
+        </div>
+        <div id="alertsBox"></div>
+
+        <div class="divider"></div>
+        <div class="sec-head">
+          <div class="sec-title">🔧 صيانة قادمة</div>
+          <div class="sec-btn outline" onclick="navTo('maint')">عرض الكل</div>
+        </div>
+        <div id="upcomingMaint"></div>
+      </div>
+    </div>
+
+    <!-- PAGE: UNITS -->
+    <div class="page" id="page-units">
+      <div style="padding:16px">
+        <div class="sec-head">
+          <div class="sec-title">🏨 الوحدات</div>
+          <div class="sec-btn" onclick="openModal('unitModal')">+ إضافة</div>
+        </div>
+        <div class="tabs" id="unitTypeTabs">
+          <div class="tab active" data-type="all" onclick="filterUnits('all',this)">الكل</div>
+          <div class="tab" data-type="hotel" onclick="filterUnits('hotel',this)">فنادق</div>
+          <div class="tab" data-type="apt" onclick="filterUnits('apt',this)">شقق</div>
+        </div>
+        <div class="search-wrap"><input type="text" placeholder="ابحث عن وحدة..." id="unitSearch" oninput="renderUnits()"/></div>
+        <div id="unitsList"></div>
+      </div>
+    </div>
+
+    <!-- PAGE: INVENTORY -->
+    <div class="page" id="page-inv">
+      <div style="padding:16px">
+        <div class="sec-head">
+          <div class="sec-title">📦 المخزون</div>
+          <div class="sec-btn" onclick="openModal('invModal')">+ إضافة</div>
+        </div>
+        <div class="tabs">
+          <div class="tab active" data-cat="all" onclick="filterInv('all',this)">الكل</div>
+          <div class="tab" data-cat="linen" onclick="filterInv('linen',this)">مفروشات</div>
+          <div class="tab" data-cat="furniture" onclick="filterInv('furniture',this)">أثاث</div>
+          <div class="tab" data-cat="kitchen" onclick="filterInv('kitchen',this)">مطبخ</div>
+          <div class="tab" data-cat="bath" onclick="filterInv('bath',this)">حمام</div>
+          <div class="tab" data-cat="other" onclick="filterInv('other',this)">أخرى</div>
+        </div>
+        <div class="search-wrap"><input type="text" placeholder="ابحث في المخزون..." id="invSearch" oninput="renderInventory()"/></div>
+        <div id="invList"></div>
+      </div>
+    </div>
+
+    <!-- PAGE: MAINTENANCE -->
+    <div class="page" id="page-maint">
+      <div style="padding:16px">
+        <div class="sec-head">
+          <div class="sec-title">🔧 الصيانة والتجديد</div>
+          <div class="sec-btn" onclick="openModal('maintModal')">+ إضافة</div>
+        </div>
+        <div class="tabs">
+          <div class="tab active" data-ms="all" onclick="filterMaint('all',this)">الكل</div>
+          <div class="tab" data-ms="pending" onclick="filterMaint('pending',this)">قادمة</div>
+          <div class="tab" data-ms="overdue" onclick="filterMaint('overdue',this)">متأخرة</div>
+          <div class="tab" data-ms="done" onclick="filterMaint('done',this)">منتهية</div>
+        </div>
+        <div id="maintList"></div>
+      </div>
+    </div>
+
+    <!-- PAGE: REPORTS -->
+    <div class="page" id="page-reports">
+      <div style="padding:16px">
+        <div class="sec-title" style="margin-bottom:12px">📊 التقارير والإحصائيات</div>
+        <div id="reportsContent"></div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+
+  <!-- BOTTOM NAV -->
+  <div class="bottomnav">
+    <button class="navitem active" data-page="dash" onclick="navTo('dash')">
+      <div class="ni-wrap"><span class="ni">🏠</span></div>
+      <span class="nl">الرئيسية</span>
+    </button>
+    <button class="navitem" data-page="units" onclick="navTo('units')">
+      <div class="ni-wrap"><span class="ni">🏨</span></div>
+      <span class="nl">الوحدات</span>
+    </button>
+    <button class="navitem" data-page="inv" onclick="navTo('inv')">
+      <div class="ni-wrap"><span class="ni">📦</span><span class="badge" id="invBadge"></span></div>
+      <span class="nl">المخزون</span>
+    </button>
+    <button class="navitem" data-page="maint" onclick="navTo('maint')">
+      <div class="ni-wrap"><span class="ni">🔧</span><span class="badge" id="maintBadge"></span></div>
+      <span class="nl">الصيانة</span>
+    </button>
+    <button class="navitem" data-page="reports" onclick="navTo('reports')">
+      <div class="ni-wrap"><span class="ni">📊</span></div>
+      <span class="nl">التقارير</span>
+    </button>
+  </div>
+
+</div><!-- /app -->
+
+<!-- ══════ MODALS ══════ -->
+
+<!-- UNIT MODAL -->
+<div class="overlay" id="unitModal" onclick="handleOvClick(event,'unitModal')">
+<div class="modal">
+  <div class="modal-handle"></div>
+  <div class="modal-title" id="unitModalTitle">🏨 إضافة وحدة</div>
+  <input type="hidden" id="editUnitId"/>
+  <div class="f"><label>اسم الوحدة *</label><input id="uName" placeholder="مثال: جناح 101، شقة النيل..."/></div>
+  <div class="f-row">
+    <div class="f"><label>النوع *</label>
+      <select id="uType">
+        <option value="hotel">فندق</option>
+        <option value="apt">شقة مفروشة</option>
+      </select>
+    </div>
+    <div class="f"><label>الطابق/الموقع</label><input id="uFloor" placeholder="الطابق 3..."/></div>
+  </div>
+  <div class="f"><label>الوصف / ملاحظات</label><textarea id="uNote" placeholder="أي تفاصيل إضافية..."></textarea></div>
+  <div class="btn-row">
+    <button class="btn-cancel" onclick="closeModal('unitModal')">إلغاء</button>
+    <button class="btn-save" onclick="saveUnit()">حفظ الوحدة</button>
+  </div>
+</div>
+</div>
+
+<!-- INVENTORY MODAL -->
+<div class="overlay" id="invModal" onclick="handleOvClick(event,'invModal')">
+<div class="modal">
+  <div class="modal-handle"></div>
+  <div class="modal-title" id="invModalTitle">📦 إضافة صنف</div>
+  <input type="hidden" id="editInvId"/>
+  <div class="f"><label>اسم الصنف *</label><input id="iName" placeholder="مثال: مناشف، شراشف، مخدات..."/></div>
+  <div class="f-row">
+    <div class="f"><label>الفئة *</label>
+      <select id="iCat">
+        <option value="linen">مفروشات</option>
+        <option value="furniture">أثاث</option>
+        <option value="kitchen">مطبخ</option>
+        <option value="bath">حمام</option>
+        <option value="other">أخرى</option>
+      </select>
+    </div>
+    <div class="f"><label>وحدة القياس</label>
+      <select id="iUnit">
+        <option value="قطعة">قطعة</option>
+        <option value="طقم">طقم</option>
+        <option value="علبة">علبة</option>
+        <option value="كرتونة">كرتونة</option>
+        <option value="لتر">لتر</option>
+      </select>
+    </div>
+  </div>
+  <div class="f-row">
+    <div class="f"><label>الكمية الحالية *</label><input type="number" id="iQty" placeholder="0" min="0"/></div>
+    <div class="f"><label>حد التنبيه *</label><input type="number" id="iMin" placeholder="5" min="0"/>
+      <div class="f-hint">يُنبه عند الوصول لهذه الكمية</div>
+    </div>
+  </div>
+  <div class="f"><label>الوحدة المرتبطة (اختياري)</label>
+    <select id="iUnit2"><option value="">— كل الوحدات —</option></select>
+  </div>
+  <div class="f"><label>ملاحظات</label><textarea id="iNote" placeholder="مورد، سعر، أي معلومة..."></textarea></div>
+  <div class="btn-row">
+    <button class="btn-cancel" onclick="closeModal('invModal')">إلغاء</button>
+    <button class="btn-save" onclick="saveInvItem()">حفظ الصنف</button>
+  </div>
+</div>
+</div>
+
+<!-- MAINTENANCE MODAL -->
+<div class="overlay" id="maintModal" onclick="handleOvClick(event,'maintModal')">
+<div class="modal">
+  <div class="modal-handle"></div>
+  <div class="modal-title" id="maintModalTitle">🔧 إضافة مهمة صيانة</div>
+  <input type="hidden" id="editMaintId"/>
+  <div class="f"><label>وصف المهمة *</label><input id="mDesc" placeholder="مثال: تجديد دهانات، صيانة تكييف..."/></div>
+  <div class="f"><label>الوحدة المرتبطة</label>
+    <select id="mUnit"><option value="">— عام / كل الوحدات —</option></select>
+  </div>
+  <div class="f-row">
+    <div class="f"><label>تاريخ التنفيذ *</label><input type="date" id="mDate"/></div>
+    <div class="f"><label>الأولوية</label>
+      <select id="mPrio">
+        <option value="low">عادية</option>
+        <option value="med">متوسطة</option>
+        <option value="high">عاجلة</option>
+      </select>
+    </div>
+  </div>
+  <div class="f"><label>التكلفة التقديرية (ج.م)</label><input type="number" id="mCost" placeholder="0" min="0"/></div>
+  <div class="f"><label>ملاحظات</label><textarea id="mNote" placeholder="تفاصيل إضافية..."></textarea></div>
+  <div class="btn-row">
+    <button class="btn-cancel" onclick="closeModal('maintModal')">إلغاء</button>
+    <button class="btn-save" onclick="saveMaint()">حفظ المهمة</button>
+  </div>
+</div>
+</div>
+
+<!-- UNIT DETAIL MODAL -->
+<div class="overlay" id="unitDetailModal" onclick="handleOvClick(event,'unitDetailModal')">
+<div class="modal">
+  <div class="modal-handle"></div>
+  <div class="modal-title" id="udTitle"></div>
+  <div id="udContent"></div>
+  <button class="btn-cancel" style="width:100%;margin-top:6px" onclick="closeModal('unitDetailModal')">إغلاق</button>
+</div>
+</div>
+
+<!-- NOTIF MODAL -->
+<div class="overlay" id="notifModal" onclick="handleOvClick(event,'notifModal')">
+<div class="modal">
+  <div class="modal-handle"></div>
+  <div class="modal-title">🔔 الإشعارات</div>
+  <div id="notifContent"></div>
+  <button class="btn-cancel" style="width:100%;margin-top:6px" onclick="closeModal('notifModal')">إغلاق</button>
+</div>
+</div>
+
+<!-- SETTINGS MODAL -->
+<div class="overlay" id="settingsModal" onclick="handleOvClick(event,'settingsModal')">
+<div class="modal">
+  <div class="modal-handle"></div>
+  <div class="modal-title">⚙️ الإعدادات</div>
+  <div class="f"><label>اسم المنشأة</label><input id="bizName" placeholder="اسم الفندق أو الشركة..."/></div>
+  <div style="margin:14px 0;padding:12px;background:var(--s2);border-radius:10px;border:1px solid var(--border)">
+    <div style="font-size:.78rem;font-weight:700;margin-bottom:8px;color:var(--muted)">📲 تثبيت التطبيق</div>
+    <div style="font-size:.78rem;color:var(--muted2);line-height:1.7" id="installGuideText"></div>
+  </div>
+  <div style="margin:14px 0;padding:12px;background:rgba(239,68,68,.07);border-radius:10px;border:1px solid rgba(239,68,68,.2)">
+    <div style="font-size:.78rem;font-weight:700;margin-bottom:8px;color:var(--red)">⚠️ خطر</div>
+    <button onclick="resetAll()" style="background:transparent;border:1px solid var(--red);color:var(--red);padding:7px 14px;border-radius:8px;font-family:'Tajawal',sans-serif;font-size:.78rem;cursor:pointer">حذف كل البيانات</button>
+  </div>
+  <div class="btn-row">
+    <button class="btn-cancel" onclick="closeModal('settingsModal')">إلغاء</button>
+    <button class="btn-save" onclick="saveSettings()">حفظ</button>
+  </div>
+</div>
+</div>
+
+<!-- ══════ SCRIPTS ══════ -->
+<script>
+// ─── STATE ───
+let state = JSON.parse(localStorage.getItem('furni_state') || 'null') || {
+  units: [],
+  inventory: [],
+  maintenance: [],
+  settings: { bizName: 'نُخبة' }
+};
+
+let currentPage = 'dash';
+let unitFilter = 'all';
+let invFilter = 'all';
+let maintFilter = 'all';
+
+function save() { localStorage.setItem('furni_state', JSON.stringify(state)); }
+
+// ─── NAVIGATION ───
+function navTo(page) {
+  currentPage = page;
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.getElementById('page-' + page).classList.add('active');
+  document.querySelectorAll('.navitem').forEach(n => {
+    n.classList.toggle('active', n.dataset.page === page);
+  });
+  document.getElementById('content').scrollTop = 0;
+  if (page === 'dash') renderDash();
+  else if (page === 'units') renderUnits();
+  else if (page === 'inv') renderInventory();
+  else if (page === 'maint') renderMaint();
+  else if (page === 'reports') renderReports();
+}
+
+// ─── MODAL ───
+function openModal(id) { document.getElementById(id).classList.add('open'); populateModal(id); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+function handleOvClick(e, id) { if (e.target === document.getElementById(id)) closeModal(id); }
+
+function populateModal(id) {
+  if (id === 'invModal' || id === 'maintModal') {
+    const sel1 = document.getElementById('iUnit2');
+    const sel2 = document.getElementById('mUnit');
+    const sel = id === 'invModal' ? sel1 : sel2;
+    const existing = sel.value;
+    sel.innerHTML = '<option value="">— كل الوحدات —</option>';
+    state.units.forEach(u => {
+      sel.innerHTML += `<option value="${u.id}">${u.name}</option>`;
+    });
+    sel.value = existing;
+  }
+  if (id === 'notifModal') renderNotifModal();
+  if (id === 'settingsModal') {
+    document.getElementById('bizName').value = state.settings.bizName || '';
+    renderInstallGuide();
+  }
+}
+
+// ─── DASHBOARD ───
+function renderDash() {
+  const today = new Date(); today.setHours(0,0,0,0);
+
+  const lowInv = state.inventory.filter(i => i.qty <= i.min);
+  const critInv = state.inventory.filter(i => i.qty === 0);
+  const overdueM = state.maintenance.filter(m => !m.done && new Date(m.date) < today);
+  const upcomingM = state.maintenance.filter(m => {
+    if (m.done) return false;
+    const d = new Date(m.date); d.setHours(0,0,0,0);
+    const diff = (d - today) / 86400000;
+    return diff >= 0 && diff <= 7;
+  });
+
+  // stats
+  document.getElementById('dashStats').innerHTML = `
+    <div class="stat-card gold"><div class="stat-num">${state.units.length}</div><div class="stat-label">إجمالي الوحدات</div></div>
+    <div class="stat-card red"><div class="stat-num">${critInv.length}</div><div class="stat-label">أصناف نفدت</div><div class="stat-sub">${lowInv.length} على وشك النفاد</div></div>
+    <div class="stat-card orange"><div class="stat-num">${overdueM.length}</div><div class="stat-label">صيانة متأخرة</div></div>
+    <div class="stat-card teal"><div class="stat-num">${upcomingM.length}</div><div class="stat-label">صيانة هذا الأسبوع</div></div>
+  `;
+
+  // alerts
+  let alertsHtml = '';
+  critInv.forEach(i => {
+    alertsHtml += `<div class="alert-card urgent">
+      <div class="alert-icon">🚨</div>
+      <div class="alert-body"><div class="alert-title">${i.name} — نفد تماماً!</div>
+      <div class="alert-sub">${catLabel(i.cat)} • ${unitName(i.unitId)}</div></div>
+      <button class="alert-action" onclick="openEditInv('${i.id}')">تحديث</button></div>`;
+  });
+  lowInv.filter(i => i.qty > 0).forEach(i => {
+    alertsHtml += `<div class="alert-card warn">
+      <div class="alert-icon">⚠️</div>
+      <div class="alert-body"><div class="alert-title">${i.name} — كمية منخفضة</div>
+      <div class="alert-sub">متبقي ${i.qty} ${i.unit} • حد التنبيه ${i.min}</div></div>
+      <button class="alert-action" onclick="openEditInv('${i.id}')">تحديث</button></div>`;
+  });
+  overdueM.forEach(m => {
+    alertsHtml += `<div class="alert-card urgent">
+      <div class="alert-icon">🔧</div>
+      <div class="alert-body"><div class="alert-title">${m.desc} — متأخرة!</div>
+      <div class="alert-sub">كانت ${formatDate(m.date)} • ${unitName(m.unitId)}</div></div>
+      <button class="alert-action" onclick="markMaintDone('${m.id}')">✓ تم</button></div>`;
+  });
+  if (!alertsHtml) alertsHtml = `<div class="alert-card info"><div class="alert-icon">✅</div><div class="alert-body"><div class="alert-title">لا توجد تنبيهات عاجلة</div><div class="alert-sub">كل شيء على ما يرام!</div></div></div>`;
+  document.getElementById('alertsBox').innerHTML = alertsHtml;
+
+  // upcoming maintenance
+  let upHtml = '';
+  upcomingM.sort((a,b)=>new Date(a.date)-new Date(b.date)).slice(0,3).forEach(m => {
+    const d = new Date(m.date); d.setHours(0,0,0,0);
+    const diff = Math.round((d - today) / 86400000);
+    const label = diff === 0 ? 'اليوم' : diff === 1 ? 'غداً' : `خلال ${diff} أيام`;
+    upHtml += `<div class="alert-card info">
+      <div class="alert-icon">📅</div>
+      <div class="alert-body"><div class="alert-title">${m.desc}</div>
+      <div class="alert-sub">${label} — ${unitName(m.unitId)}</div></div>
+      <button class="alert-action" onclick="markMaintDone('${m.id}')">✓ تم</button></div>`;
+  });
+  if (!upHtml) upHtml = `<div class="alert-card info"><div class="alert-icon">🎉</div><div class="alert-body"><div class="alert-title">لا صيانة هذا الأسبوع</div></div></div>`;
+  document.getElementById('upcomingMaint').innerHTML = upHtml;
+
+  // badges
+  const alertCount = critInv.length + lowInv.filter(i=>i.qty>0).length;
+  const ib = document.getElementById('invBadge');
+  ib.textContent = alertCount; ib.style.display = alertCount > 0 ? 'block' : 'none';
+  const mb = document.getElementById('maintBadge');
+  mb.textContent = overdueM.length; mb.style.display = overdueM.length > 0 ? 'block' : 'none';
+}
+
+// ─── UNITS ───
+function filterUnits(type, el) {
+  unitFilter = type;
+  document.querySelectorAll('#unitTypeTabs .tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  renderUnits();
+}
+
+function renderUnits() {
+  const q = (document.getElementById('unitSearch')?.value || '').toLowerCase();
+  let units = state.units.filter(u => {
+    if (unitFilter !== 'all' && u.type !== unitFilter) return false;
+    if (q && !u.name.toLowerCase().includes(q)) return false;
+    return true;
+  });
+
+  if (!units.length) {
+    document.getElementById('unitsList').innerHTML = `<div class="empty"><div class="empty-icon">🏨</div><h3>لا توجد وحدات</h3><p>اضغط "+ إضافة" لإضافة وحدة جديدة</p></div>`;
+    return;
+  }
+
+  document.getElementById('unitsList').innerHTML = units.map(u => {
+    const uInv = state.inventory.filter(i => i.unitId === u.id || !i.unitId);
+    const lowInU = state.inventory.filter(i => (i.unitId === u.id) && i.qty <= i.min).length;
+    const maintU = state.maintenance.filter(m => m.unitId === u.id && !m.done).length;
+    return `<div class="card">
+      <div class="card-head">
+        <div><div class="card-name">${u.name}</div><div class="card-sub">${u.type==='hotel'?'🏨 فندق':'🏠 شقة مفروشة'}${u.floor ? ' • ' + u.floor : ''}</div></div>
+        <div class="card-acts">
+          <button class="cta" onclick="viewUnit('${u.id}')" title="تفاصيل">👁</button>
+          <button class="cta" onclick="openEditUnit('${u.id}')" title="تعديل">✏️</button>
+          <button class="cta del" onclick="deleteUnit('${u.id}')" title="حذف">🗑</button>
+        </div>
+      </div>
+      <div class="tags">
+        ${lowInU > 0 ? `<span class="tag red">⚠️ ${lowInU} صنف منخفض</span>` : '<span class="tag green">✅ مخزون جيد</span>'}
+        ${maintU > 0 ? `<span class="tag orange">🔧 ${maintU} صيانة</span>` : ''}
+        ${u.note ? `<span class="tag">${u.note.slice(0,30)}${u.note.length>30?'…':''}</span>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function saveUnit() {
+  const name = document.getElementById('uName').value.trim();
+  if (!name) { alert('اكتب اسم الوحدة'); return; }
+  const editId = document.getElementById('editUnitId').value;
+  const unit = { id: editId || uid(), name, type: document.getElementById('uType').value, floor: document.getElementById('uFloor').value.trim(), note: document.getElementById('uNote').value.trim() };
+  if (editId) { const i = state.units.findIndex(u=>u.id===editId); if(i>-1) state.units[i]=unit; }
+  else state.units.push(unit);
+  save(); closeModal('unitModal'); renderUnits(); renderDash();
+}
+
+function openEditUnit(id) {
+  const u = state.units.find(x=>x.id===id);
+  if (!u) return;
+  document.getElementById('editUnitId').value = id;
+  document.getElementById('uName').value = u.name;
+  document.getElementById('uType').value = u.type;
+  document.getElementById('uFloor').value = u.floor||'';
+  document.getElementById('uNote').value = u.note||'';
+  document.getElementById('unitModalTitle').textContent = '✏️ تعديل الوحدة';
+  openModal('unitModal');
+}
+
+function deleteUnit(id) {
+  if (!confirm('حذف الوحدة؟ البيانات المرتبطة ستُحتفظ بها.')) return;
+  state.units = state.units.filter(u=>u.id!==id);
+  save(); renderUnits(); renderDash();
+}
+
+function viewUnit(id) {
+  const u = state.units.find(x=>x.id===id);
+  if (!u) return;
+  const uInv = state.inventory.filter(i=>i.unitId===id);
+  const uMaint = state.maintenance.filter(m=>m.unitId===id&&!m.done);
+  document.getElementById('udTitle').textContent = u.name;
+  document.getElementById('udContent').innerHTML = `
+    <div class="tags" style="margin-bottom:10px">
+      <span class="tag teal">${u.type==='hotel'?'🏨 فندق':'🏠 شقة'}</span>
+      ${u.floor?`<span class="tag">${u.floor}</span>`:''}
+    </div>
+    ${u.note?`<div style="font-size:.82rem;color:var(--muted);margin-bottom:12px">${u.note}</div>`:''}
+    <div style="font-size:.78rem;font-weight:700;color:var(--muted);margin-bottom:8px">📦 مخزون مرتبط (${uInv.length} صنف)</div>
+    ${uInv.length?uInv.map(i=>`<div style="display:flex;justify-content:space-between;font-size:.82rem;padding:5px 0;border-bottom:1px solid var(--border)">
+      <span>${catIcon(i.cat)} ${i.name}</span>
+      <span class="${i.qty<=i.min?'tag red':'tag green'}" style="padding:1px 8px">${i.qty} ${i.unit}</span>
+    </div>`).join(''):'<div style="color:var(--muted);font-size:.8rem">لا يوجد مخزون مرتبط</div>'}
+    <div style="font-size:.78rem;font-weight:700;color:var(--muted);margin:12px 0 8px">🔧 صيانة قادمة (${uMaint.length})</div>
+    ${uMaint.length?uMaint.map(m=>`<div style="font-size:.82rem;padding:5px 0;border-bottom:1px solid var(--border);display:flex;justify-content:space-between">
+      <span>${m.desc}</span><span style="color:var(--gold)">${formatDate(m.date)}</span>
+    </div>`).join(''):'<div style="color:var(--muted);font-size:.8rem">لا صيانة قادمة</div>'}
+  `;
+  openModal('unitDetailModal');
+}
+
+// ─── INVENTORY ───
+function filterInv(cat, el) {
+  invFilter = cat;
+  document.querySelectorAll('#page-inv .tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  renderInventory();
+}
+
+function renderInventory() {
+  const q = (document.getElementById('invSearch')?.value||'').toLowerCase();
+  let items = state.inventory.filter(i => {
+    if (invFilter !== 'all' && i.cat !== invFilter) return false;
+    if (q && !i.name.toLowerCase().includes(q)) return false;
+    return true;
+  }).sort((a,b)=>{
+    // urgent first
+    const aLow = a.qty <= a.min ? 0 : 1;
+    const bLow = b.qty <= b.min ? 0 : 1;
+    return aLow - bLow;
+  });
+
+  if (!items.length) {
+    document.getElementById('invList').innerHTML = `<div class="empty"><div class="empty-icon">📦</div><h3>لا يوجد مخزون</h3><p>اضغط "+ إضافة" لإضافة صنف</p></div>`;
+    return;
+  }
+
+  document.getElementById('invList').innerHTML = items.map(i => {
+    const pct = i.min > 0 ? Math.min(100, Math.round((i.qty / (i.min * 3)) * 100)) : 100;
+    const isLow = i.qty <= i.min;
+    const isCrit = i.qty === 0;
+    const fillColor = isCrit ? 'var(--red)' : isLow ? 'var(--orange)' : 'var(--green)';
+    return `<div class="inv-item" style="${isLow?'border-color:rgba(249,115,22,.35)':''}">
+      <div class="inv-icon">${catIcon(i.cat)}</div>
+      <div class="inv-body">
+        <div class="inv-name">${i.name} ${isCrit?'🔴':isLow?'🟠':''}</div>
+        <div class="inv-meta">${catLabel(i.cat)} • ${unitName(i.unitId)} • حد التنبيه: ${i.min}</div>
+        <div class="prog-wrap">
+          <div class="prog-bar"><div class="prog-fill" style="width:${pct}%;background:${fillColor}"></div></div>
+        </div>
+      </div>
+      <div class="inv-right">
+        <div class="inv-qty" style="color:${fillColor}">${i.qty}</div>
+        <div class="inv-unit">${i.unit}</div>
+        <div class="qty-ctrl">
+          <button class="qbtn" onclick="adjustQty('${i.id}',-1)">−</button>
+          <button class="qbtn" onclick="adjustQty('${i.id}',1)">+</button>
+        </div>
+      </div>
+      <div style="position:absolute;top:8px;left:8px;display:flex;gap:4px">
+        <button class="cta" onclick="openEditInv('${i.id}')" style="width:24px;height:24px;font-size:.7rem">✏️</button>
+        <button class="cta del" onclick="deleteInv('${i.id}')" style="width:24px;height:24px;font-size:.7rem">🗑</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function adjustQty(id, delta) {
+  const i = state.inventory.find(x=>x.id===id);
+  if (!i) return;
+  i.qty = Math.max(0, i.qty + delta);
+  save(); renderInventory(); renderDash();
+}
+
+function saveInvItem() {
+  const name = document.getElementById('iName').value.trim();
+  const qty = parseInt(document.getElementById('iQty').value) || 0;
+  const min = parseInt(document.getElementById('iMin').value) || 0;
+  if (!name) { alert('اكتب اسم الصنف'); return; }
+  const editId = document.getElementById('editInvId').value;
+  const item = {
+    id: editId || uid(), name, cat: document.getElementById('iCat').value,
+    unit: document.getElementById('iUnit').value, qty, min,
+    unitId: document.getElementById('iUnit2').value,
+    note: document.getElementById('iNote').value.trim()
+  };
+  if (editId) { const i = state.inventory.findIndex(x=>x.id===editId); if(i>-1) state.inventory[i]=item; }
+  else state.inventory.push(item);
+  save(); closeModal('invModal'); renderInventory(); renderDash();
+}
+
+function openEditInv(id) {
+  const i = state.inventory.find(x=>x.id===id);
+  if (!i) return;
+  document.getElementById('editInvId').value = id;
+  document.getElementById('iName').value = i.name;
+  document.getElementById('iCat').value = i.cat;
+  document.getElementById('iUnit').value = i.unit;
+  document.getElementById('iQty').value = i.qty;
+  document.getElementById('iMin').value = i.min;
+  document.getElementById('iNote').value = i.note||'';
+  document.getElementById('invModalTitle').textContent = '✏️ تعديل الصنف';
+  openModal('invModal');
+  setTimeout(()=>{ document.getElementById('iUnit2').value = i.unitId||''; }, 50);
+}
+
+function deleteInv(id) {
+  if (!confirm('حذف الصنف؟')) return;
+  state.inventory = state.inventory.filter(i=>i.id!==id);
+  save(); renderInventory(); renderDash();
+}
+
+// ─── MAINTENANCE ───
+function filterMaint(status, el) {
+  maintFilter = status;
+  document.querySelectorAll('#page-maint .tab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  renderMaint();
+}
+
+function renderMaint() {
+  const today = new Date(); today.setHours(0,0,0,0);
+  let items = state.maintenance.filter(m => {
+    const d = new Date(m.date); d.setHours(0,0,0,0);
+    if (maintFilter === 'pending') return !m.done && d >= today;
+    if (maintFilter === 'overdue') return !m.done && d < today;
+    if (maintFilter === 'done') return m.done;
+    return true;
+  }).sort((a,b)=>new Date(a.date)-new Date(b.date));
+
+  if (!items.length) {
+    document.getElementById('maintList').innerHTML = `<div class="empty"><div class="empty-icon">🔧</div><h3>لا توجد مهام</h3><p>اضغط "+ إضافة" لإضافة مهمة صيانة</p></div>`;
+    return;
+  }
+
+  document.getElementById('maintList').innerHTML = items.map(m => {
+    const d = new Date(m.date); d.setHours(0,0,0,0);
+    const isOverdue = !m.done && d < today;
+    const isToday = !m.done && d.getTime() === today.getTime();
+    const prioColor = {low:'var(--teal)',med:'var(--orange)',high:'var(--red)'}[m.prio]||'var(--muted)';
+    const prioLabel = {low:'عادية',med:'متوسطة',high:'عاجلة'}[m.prio]||'';
+    return `<div class="maint-item ${m.done?'done':''}">
+      <div class="maint-stripe" style="background:${m.done?'var(--green)':isOverdue?'var(--red)':isToday?'var(--orange)':prioColor}"></div>
+      <div class="maint-head">
+        <div class="maint-name">${m.desc}</div>
+        <button class="maint-done-btn ${m.done?'done':''}" onclick="markMaintDone('${m.id}')">
+          ${m.done?'✓ تم':'تم؟'}
+        </button>
+      </div>
+      <div class="maint-meta">
+        <span>📅 ${formatDate(m.date)}${isOverdue?' 🔴 متأخر':isToday?' 🟡 اليوم':''}</span>
+        ${m.unitId?`<span>📍 ${unitName(m.unitId)}</span>`:''}
+        <span style="color:${prioColor}">● ${prioLabel}</span>
+        ${m.cost?`<span>💰 ${Number(m.cost).toLocaleString()} ج.م</span>`:''}
+      </div>
+      ${m.note?`<div style="font-size:.75rem;color:var(--muted);margin-top:6px">${m.note}</div>`:''}
+      <div style="position:absolute;top:8px;left:8px;display:flex;gap:4px">
+        <button class="cta" onclick="openEditMaint('${m.id}')" style="width:24px;height:24px;font-size:.7rem">✏️</button>
+        <button class="cta del" onclick="deleteMaint('${m.id}')" style="width:24px;height:24px;font-size:.7rem">🗑</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function saveMaint() {
+  const desc = document.getElementById('mDesc').value.trim();
+  const date = document.getElementById('mDate').value;
+  if (!desc) { alert('اكتب وصف المهمة'); return; }
+  if (!date) { alert('اختر التاريخ'); return; }
+  const editId = document.getElementById('editMaintId').value;
+  const item = {
+    id: editId || uid(), desc, date,
+    unitId: document.getElementById('mUnit').value,
+    prio: document.getElementById('mPrio').value,
+    cost: document.getElementById('mCost').value,
+    note: document.getElementById('mNote').value.trim(),
+    done: false
+  };
+  if (editId) { const i = state.maintenance.findIndex(x=>x.id===editId); if(i>-1) item.done=state.maintenance[i].done; state.maintenance[i]=item; }
+  else state.maintenance.push(item);
+  save(); closeModal('maintModal'); renderMaint(); renderDash();
+}
+
+function openEditMaint(id) {
+  const m = state.maintenance.find(x=>x.id===id);
+  if (!m) return;
+  document.getElementById('editMaintId').value = id;
+  document.getElementById('mDesc').value = m.desc;
+  document.getElementById('mDate').value = m.date;
+  document.getElementById('mPrio').value = m.prio;
+  document.getElementById('mCost').value = m.cost||'';
+  document.getElementById('mNote').value = m.note||'';
+  document.getElementById('maintModalTitle').textContent = '✏️ تعديل المهمة';
+  openModal('maintModal');
+  setTimeout(()=>{ document.getElementById('mUnit').value = m.unitId||''; }, 50);
+}
+
+function markMaintDone(id) {
+  const m = state.maintenance.find(x=>x.id===id);
+  if (m) { m.done = !m.done; save(); renderMaint(); renderDash(); }
+}
+
+function deleteMaint(id) {
+  if (!confirm('حذف المهمة؟')) return;
+  state.maintenance = state.maintenance.filter(m=>m.id!==id);
+  save(); renderMaint(); renderDash();
+}
+
+// ─── REPORTS ───
+function renderReports() {
+  const today = new Date(); today.setHours(0,0,0,0);
+  const totalInv = state.inventory.length;
+  const lowInv = state.inventory.filter(i=>i.qty<=i.min).length;
+  const critInv = state.inventory.filter(i=>i.qty===0).length;
+  const totalMaint = state.maintenance.length;
+  const doneMaint = state.maintenance.filter(m=>m.done).length;
+  const overdueMaint = state.maintenance.filter(m=>!m.done && new Date(m.date)<today).length;
+  const totalCost = state.maintenance.filter(m=>m.done).reduce((s,m)=>s+(parseFloat(m.cost)||0),0);
+
+  // inv by cat
+  const catCounts = {};
+  state.inventory.forEach(i=>{ catCounts[i.cat]=(catCounts[i.cat]||0)+1; });
+  const maxCat = Math.max(...Object.values(catCounts), 1);
+
+  // units by type
+  const hotels = state.units.filter(u=>u.type==='hotel').length;
+  const apts = state.units.filter(u=>u.type==='apt').length;
+
+  document.getElementById('reportsContent').innerHTML = `
+    <div class="report-card">
+      <div class="report-title">🏨 نظرة عامة</div>
+      <div class="stats-grid">
+        <div class="stat-card gold"><div class="stat-num">${state.units.length}</div><div class="stat-label">إجمالي الوحدات</div><div class="stat-sub">${hotels} فندق • ${apts} شقة</div></div>
+        <div class="stat-card teal"><div class="stat-num">${totalInv}</div><div class="stat-label">أصناف المخزون</div><div class="stat-sub">${lowInv} منخفض • ${critInv} نفد</div></div>
+      </div>
+    </div>
+
+    <div class="report-card">
+      <div class="report-title">📦 المخزون حسب الفئة</div>
+      <div class="bar-chart">
+        ${Object.entries({linen:'مفروشات',furniture:'أثاث',kitchen:'مطبخ',bath:'حمام',other:'أخرى'}).map(([k,v])=>{
+          const c = catCounts[k]||0;
+          const pct = maxCat>0?Math.round((c/maxCat)*100):0;
+          return `<div class="bar-row">
+            <div class="bar-label">${v}</div>
+            <div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:var(--gold)"></div></div>
+            <div class="bar-val">${c}</div>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>
+
+    <div class="report-card">
+      <div class="report-title">🔧 الصيانة</div>
+      <div class="stats-grid">
+        <div class="stat-card green"><div class="stat-num">${doneMaint}</div><div class="stat-label">مهام منجزة</div></div>
+        <div class="stat-card red"><div class="stat-num">${overdueMaint}</div><div class="stat-label">متأخرة</div></div>
+      </div>
+      ${totalCost>0?`<div style="margin-top:12px;padding:10px;background:var(--s3);border-radius:8px;display:flex;justify-content:space-between;align-items:center">
+        <span style="font-size:.8rem;color:var(--muted)">إجمالي تكاليف الصيانة المنجزة</span>
+        <span style="font-size:1rem;font-weight:800;color:var(--gold)">${totalCost.toLocaleString()} ج.م</span>
+      </div>`:''}
+    </div>
+
+    <div class="report-card">
+      <div class="report-title">🚨 تنبيهات المخزون</div>
+      ${state.inventory.filter(i=>i.qty<=i.min).length===0
+        ? '<div style="color:var(--green);font-size:.85rem">✅ جميع الأصناف في مستوى جيد</div>'
+        : state.inventory.filter(i=>i.qty<=i.min).map(i=>`
+          <div style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--border);font-size:.82rem">
+            <span>${catIcon(i.cat)} ${i.name}</span>
+            <span class="${i.qty===0?'tag red':'tag orange'}">${i.qty===0?'نفد':'منخفض'} — ${i.qty}/${i.min}</span>
+          </div>`).join('')
+      }
+    </div>
+  `;
+}
+
+// ─── NOTIFICATIONS ───
+function renderNotifModal() {
+  const today = new Date(); today.setHours(0,0,0,0);
+  const alerts = [];
+  state.inventory.filter(i=>i.qty===0).forEach(i=>alerts.push({type:'crit',text:`🔴 ${i.name} — نفد تماماً`}));
+  state.inventory.filter(i=>i.qty>0&&i.qty<=i.min).forEach(i=>alerts.push({type:'warn',text:`🟠 ${i.name} — متبقي ${i.qty} ${i.unit}`}));
+  state.maintenance.filter(m=>!m.done&&new Date(m.date)<today).forEach(m=>alerts.push({type:'crit',text:`🔧 ${m.desc} — صيانة متأخرة`}));
+  const upcoming7 = state.maintenance.filter(m=>{
+    if(m.done)return false;
+    const d=new Date(m.date);d.setHours(0,0,0,0);
+    const diff=(d-today)/86400000;
+    return diff>=0&&diff<=7;
+  });
+  upcoming7.forEach(m=>alerts.push({type:'info',text:`📅 ${m.desc} — ${formatDate(m.date)}`}));
+
+  document.getElementById('notifContent').innerHTML = alerts.length
+    ? alerts.map(a=>`<div class="alert-card ${a.type==='crit'?'urgent':a.type==='warn'?'warn':'info'}" style="margin-bottom:6px">
+        <div class="alert-body" style="font-size:.83rem">${a.text}</div>
+      </div>`).join('')
+    : `<div class="empty"><div class="empty-icon">✅</div><h3>لا توجد تنبيهات</h3></div>`;
+}
+
+// ─── SETTINGS ───
+function saveSettings() {
+  state.settings.bizName = document.getElementById('bizName').value.trim() || 'نُخبة';
+  save(); closeModal('settingsModal');
+  document.querySelector('.logo').innerHTML = `${state.settings.bizName}<span>.</span><small>نُخبة المفروشات للفنادق</small>`;
+}
+
+function resetAll() {
+  if (!confirm('هتحذف كل البيانات. متأكد؟')) return;
+  if (!confirm('آخر تحذير — هتحذف كل شيء؟')) return;
+  localStorage.removeItem('furni_state');
+  location.reload();
+}
+
+// ─── HELPERS ───
+function uid() { return Math.random().toString(36).slice(2,10) + Date.now().toString(36); }
+function unitName(id) { if(!id) return 'عام'; const u=state.units.find(x=>x.id===id); return u?u.name:'عام'; }
+function catLabel(c) { return {linen:'مفروشات',furniture:'أثاث',kitchen:'مطبخ',bath:'حمام',other:'أخرى'}[c]||c; }
+function catIcon(c) { return {linen:'🛏',furniture:'🪑',kitchen:'🍳',bath:'🚿',other:'📦'}[c]||'📦'; }
+function formatDate(d) {
+  if (!d) return '';
+  const dt = new Date(d);
+  return dt.toLocaleDateString('ar-EG',{day:'numeric',month:'short',year:'numeric'});
+}
+
+// ─── MODAL RESET ───
+function resetUnitModal() {
+  document.getElementById('editUnitId').value='';
+  document.getElementById('uName').value='';
+  document.getElementById('uType').value='hotel';
+  document.getElementById('uFloor').value='';
+  document.getElementById('uNote').value='';
+  document.getElementById('unitModalTitle').textContent='🏨 إضافة وحدة';
+}
+function resetInvModal() {
+  document.getElementById('editInvId').value='';
+  ['iName','iQty','iMin','iNote'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('iCat').value='linen';
+  document.getElementById('iUnit').value='قطعة';
+  document.getElementById('invModalTitle').textContent='📦 إضافة صنف';
+}
+function resetMaintModal() {
+  document.getElementById('editMaintId').value='';
+  ['mDesc','mDate','mCost','mNote'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('mPrio').value='low';
+  document.getElementById('maintModalTitle').textContent='🔧 إضافة مهمة صيانة';
+}
+
+// Override openModal for unit/inv/maint to reset
+const _origOpen = window.openModal;
+window.openModal = function(id) {
+  if(id==='unitModal') resetUnitModal();
+  if(id==='invModal') resetInvModal();
+  if(id==='maintModal') resetMaintModal();
+  document.getElementById(id).classList.add('open');
+  populateModal(id);
+};
+
+// ─── INSTALL ───
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault(); deferredPrompt = e;
+  document.getElementById('installBanner').style.display='flex';
+  document.getElementById('installBtn').addEventListener('click', ()=>{
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(()=>{ deferredPrompt=null; document.getElementById('installBanner').style.display='none'; });
+  });
+});
+
+function renderInstallGuide() {
+  const ua = navigator.userAgent;
+  let txt = '';
+  if (/iPad|iPhone|iPod/.test(ua)) txt = '1. افتح في Safari<br>2. اضغط زر المشاركة ⬆️<br>3. اختر <strong>Add to Home Screen</strong>';
+  else if (/Android/.test(ua)) txt = deferredPrompt ? 'اضغط زر "ثبّت" في الأعلى' : '1. افتح في Chrome<br>2. اضغط النقاط ⋮<br>3. اختر <strong>Add to Home Screen</strong>';
+  else txt = 'افتح التطبيق على هاتفك واتبع تعليمات المتصفح لإضافته للشاشة الرئيسية.';
+  document.getElementById('installGuideText').innerHTML = txt;
+}
+
+// ─── SERVICE WORKER ───
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(()=>{});
+}
+
+// ─── INIT ───
+renderDash();
+</script>
+</body>
+</html>
