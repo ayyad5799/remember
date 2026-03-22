@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <meta name="theme-color" content="#0f1117" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="مواعيدي" />
+  <title>مواعيدي</title>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #0a0c12;
+      --surface: #12151f;
+      --card: #181c28;
+      --border: #252a3a;
+      --accent: #f0a500;
+      --accent2: #ff6b35;
+      --text: #e8eaf0;
+      --muted: #6b7280;
+      --success: #22c55e;
+      --danger: #ef4444;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Cairo', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Header */
+    .header {
+      background: linear-gradient(135deg, #0f1117 0%, #1a1f30 100%);
+      padding: 20px 20px 30px;
+      position: relative;
+      border-bottom: 1px solid var(--border);
+    }
+    .header::after {
+      content: '';
+      position: absolute;
+      bottom: -1px; left: 0; right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    }
+    .header-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 6px;
+    }
+    .logo {
+      font-size: 1.6rem;
+      font-weight: 900;
+      letter-spacing: -0.5px;
+    }
+    .logo span { color: var(--accent); }
+    .install-btn {
+      background: var(--accent);
+      color: #000;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 10px;
+      font-family: 'Cairo', sans-serif;
+      font-weight: 700;
+      font-size: 0.78rem;
+      cursor: pointer;
+      display: none;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.2s;
+    }
+    .install-btn:hover { transform: scale(1.03); background: #e09500; }
+    .sub-title { color: var(--muted); font-size: 0.85rem; }
+
+    /* Stats bar */
+    .stats {
+      display: flex;
+      gap: 10px;
+      padding: 14px 20px;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+    }
+    .stat {
+      flex: 1;
+      background: var(--card);
+      border-radius: 12px;
+      padding: 10px;
+      text-align: center;
+      border: 1px solid var(--border);
+    }
+    .stat-num {
+      font-size: 1.4rem;
+      font-weight: 900;
+      color: var(--accent);
+      line-height: 1;
+    }
+    .stat-label { font-size: 0.68rem; color: var(--muted); margin-top: 2px; }
+
+    /* Add button */
+    .fab {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #000;
+      border: none;
+      padding: 14px 28px;
+      border-radius: 50px;
+      font-family: 'Cairo', sans-serif;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      box-shadow: 0 8px 30px rgba(240,165,0,0.4);
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s;
+    }
+    .fab:hover { transform: translateX(-50%) scale(1.05); }
+    .fab:active { transform: translateX(-50%) scale(0.97); }
+
+    /* Main content */
+    .main { padding: 16px 16px 100px; }
+
+    /* Day filter */
+    .day-filter {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+      margin-bottom: 16px;
+      scrollbar-width: none;
+    }
+    .day-filter::-webkit-scrollbar { display: none; }
+    .day-chip {
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      padding: 7px 14px;
+      border-radius: 50px;
+      font-family: 'Cairo', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+    .day-chip.active {
+      background: var(--accent);
+      color: #000;
+      border-color: var(--accent);
+    }
+
+    /* Empty state */
+    .empty {
+      text-align: center;
+      padding: 60px 20px;
+      color: var(--muted);
+    }
+    .empty-icon { font-size: 3rem; margin-bottom: 12px; opacity: 0.5; }
+    .empty h3 { font-size: 1.1rem; margin-bottom: 6px; color: var(--text); opacity: 0.7; }
+    .empty p { font-size: 0.85rem; line-height: 1.6; }
+
+    /* Reminder cards */
+    .reminder-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 12px;
+      position: relative;
+      overflow: hidden;
+      animation: slideIn 0.3s ease;
+    }
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .reminder-card::before {
+      content: '';
+      position: absolute;
+      right: 0; top: 0; bottom: 0;
+      width: 4px;
+      border-radius: 0 16px 16px 0;
+    }
+    .reminder-card.cat-work::before { background: #3b82f6; }
+    .reminder-card.cat-health::before { background: #22c55e; }
+    .reminder-card.cat-personal::before { background: #a855f7; }
+    .reminder-card.cat-finance::before { background: var(--accent); }
+    .reminder-card.cat-other::before { background: var(--muted); }
+
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 10px;
+    }
+    .card-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text);
+      flex: 1;
+      margin-left: 10px;
+    }
+    .card-actions { display: flex; gap: 6px; }
+    .icon-btn {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      width: 32px; height: 32px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.2s;
+    }
+    .icon-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .icon-btn.delete:hover { border-color: var(--danger); color: var(--danger); }
+
+    .card-meta {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+    .badge {
+      font-size: 0.72rem;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 50px;
+    }
+    .badge-time { background: rgba(240,165,0,0.15); color: var(--accent); }
+    .badge-days { background: rgba(255,255,255,0.07); color: var(--muted); }
+    .badge-cat-work { background: rgba(59,130,246,0.15); color: #93c5fd; }
+    .badge-cat-health { background: rgba(34,197,94,0.15); color: #86efac; }
+    .badge-cat-personal { background: rgba(168,85,247,0.15); color: #d8b4fe; }
+    .badge-cat-finance { background: rgba(240,165,0,0.15); color: var(--accent); }
+    .badge-cat-other { background: rgba(107,114,128,0.15); color: #9ca3af; }
+
+    .card-note {
+      margin-top: 8px;
+      font-size: 0.82rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    /* Modal */
+    .overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      backdrop-filter: blur(6px);
+      z-index: 200;
+      display: none;
+      align-items: flex-end;
+      justify-content: center;
+    }
+    .overlay.open { display: flex; }
+
+    .modal {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 24px 24px 0 0;
+      padding: 24px 20px 40px;
+      width: 100%;
+      max-width: 480px;
+      animation: slideUp 0.3s ease;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+    @keyframes slideUp {
+      from { transform: translateY(100%); }
+      to { transform: translateY(0); }
+    }
+    .modal-handle {
+      width: 40px; height: 4px;
+      background: var(--border);
+      border-radius: 2px;
+      margin: 0 auto 20px;
+    }
+    .modal-title {
+      font-size: 1.2rem;
+      font-weight: 800;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .field { margin-bottom: 16px; }
+    .field label {
+      display: block;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    .field input, .field textarea, .field select {
+      width: 100%;
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--text);
+      padding: 12px 14px;
+      border-radius: 12px;
+      font-family: 'Cairo', sans-serif;
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .field input:focus, .field textarea:focus, .field select:focus {
+      border-color: var(--accent);
+    }
+    .field textarea { resize: vertical; min-height: 70px; }
+    .field select option { background: var(--card); }
+
+    .days-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+    .day-toggle {
+      background: var(--card);
+      border: 1px solid var(--border);
+      color: var(--muted);
+      padding: 9px 4px;
+      border-radius: 10px;
+      font-family: 'Cairo', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.15s;
+    }
+    .day-toggle.selected {
+      background: rgba(240,165,0,0.15);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .save-btn {
+      width: 100%;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      color: #000;
+      border: none;
+      padding: 14px;
+      border-radius: 14px;
+      font-family: 'Cairo', sans-serif;
+      font-weight: 800;
+      font-size: 1rem;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: all 0.2s;
+    }
+    .save-btn:hover { opacity: 0.9; transform: scale(1.01); }
+
+    /* Notification permission banner */
+    .notif-banner {
+      background: rgba(240,165,0,0.1);
+      border: 1px solid rgba(240,165,0,0.3);
+      border-radius: 12px;
+      padding: 12px 14px;
+      margin: 12px 16px 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.82rem;
+    }
+    .notif-banner button {
+      background: var(--accent);
+      color: #000;
+      border: none;
+      padding: 5px 12px;
+      border-radius: 8px;
+      font-family: 'Cairo', sans-serif;
+      font-weight: 700;
+      font-size: 0.78rem;
+      cursor: pointer;
+      margin-right: auto;
+      white-space: nowrap;
+    }
+
+    /* Install guide */
+    .install-guide {
+      display: none;
+      background: var(--card);
+      border: 1px solid rgba(240,165,0,0.3);
+      border-radius: 14px;
+      padding: 14px;
+      margin: 12px 16px 0;
+      font-size: 0.82rem;
+      line-height: 1.7;
+    }
+    .install-guide h4 { color: var(--accent); margin-bottom: 8px; font-size: 0.9rem; }
+    .install-guide p { color: var(--muted); }
+    .install-guide strong { color: var(--text); }
+
+    .section-header {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--muted);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 10px;
+      padding-right: 4px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-top">
+    <div class="logo">مواعيد<span>ي</span></div>
+    <button class="install-btn" id="installBtn">📲 ثبّت التطبيق</button>
+  </div>
+  <div class="sub-title">تذكيراتك في مكان واحد</div>
+</div>
+
+<div id="notifBanner" class="notif-banner" style="display:none">
+  <span>🔔 فعّل الإشعارات عشان تتذكر مواعيدك</span>
+  <button onclick="requestNotifPermission()">فعّل</button>
+</div>
+
+<div id="installGuide" class="install-guide">
+  <h4>📲 كيف تثبت التطبيق؟</h4>
+  <p id="guideText"></p>
+</div>
+
+<div class="stats">
+  <div class="stat">
+    <div class="stat-num" id="totalCount">0</div>
+    <div class="stat-label">إجمالي المواعيد</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num" id="todayCount">0</div>
+    <div class="stat-label">مواعيد النهارده</div>
+  </div>
+  <div class="stat">
+    <div class="stat-num" id="weekCount">0</div>
+    <div class="stat-label">مواعيد الأسبوع</div>
+  </div>
+</div>
+
+<div class="main">
+  <div class="day-filter" id="dayFilter">
+    <button class="day-chip active" data-day="all">الكل</button>
+    <button class="day-chip" data-day="sat">السبت</button>
+    <button class="day-chip" data-day="sun">الأحد</button>
+    <button class="day-chip" data-day="mon">الاثنين</button>
+    <button class="day-chip" data-day="tue">الثلاثاء</button>
+    <button class="day-chip" data-day="wed">الأربعاء</button>
+    <button class="day-chip" data-day="thu">الخميس</button>
+    <button class="day-chip" data-day="fri">الجمعة</button>
+  </div>
+
+  <div class="section-header" id="listTitle">جميع المواعيد</div>
+  <div id="reminderList"></div>
+</div>
+
+<button class="fab" onclick="openModal()">
+  ＋ موعد جديد
+</button>
+
+<!-- Modal -->
+<div class="overlay" id="overlay" onclick="handleOverlayClick(event)">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="modalTitle">📅 موعد جديد</div>
+
+    <div class="field">
+      <label>اسم الموعد / التذكير *</label>
+      <input type="text" id="titleInput" placeholder="مثال: دواء الضغط، اجتماع شغل..." />
+    </div>
+
+    <div class="field">
+      <label>الوقت *</label>
+      <input type="time" id="timeInput" />
+    </div>
+
+    <div class="field">
+      <label>الأيام المكررة *</label>
+      <div class="days-grid" id="daysGrid">
+        <button class="day-toggle" data-day="sat" onclick="toggleDay(this)">السبت</button>
+        <button class="day-toggle" data-day="sun" onclick="toggleDay(this)">الأحد</button>
+        <button class="day-toggle" data-day="mon" onclick="toggleDay(this)">الاثنين</button>
+        <button class="day-toggle" data-day="tue" onclick="toggleDay(this)">الثلاثاء</button>
+        <button class="day-toggle" data-day="wed" onclick="toggleDay(this)">الأربعاء</button>
+        <button class="day-toggle" data-day="thu" onclick="toggleDay(this)">الخميس</button>
+        <button class="day-toggle" data-day="fri" onclick="toggleDay(this)">الجمعة</button>
+        <button class="day-toggle" data-day="daily" onclick="toggleDay(this)">كل يوم</button>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>التصنيف</label>
+      <select id="catInput">
+        <option value="work">💼 شغل</option>
+        <option value="health">💊 صحة</option>
+        <option value="personal">⭐ شخصي</option>
+        <option value="finance">💰 مالي</option>
+        <option value="other">📌 أخرى</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label>ملاحظة (اختياري)</label>
+      <textarea id="noteInput" placeholder="تفاصيل إضافية..."></textarea>
+    </div>
+
+    <button class="save-btn" onclick="saveReminder()">حفظ الموعد</button>
+  </div>
+</div>
+
+<script>
+  // ====== Data ======
+  let reminders = JSON.parse(localStorage.getItem('reminders') || '[]');
+  let editId = null;
+  let activeFilter = 'all';
+
+  const DAYS_AR = { sat:'السبت', sun:'الأحد', mon:'الاثنين', tue:'الثلاثاء', wed:'الأربعاء', thu:'الخميس', fri:'الجمعة', daily:'كل يوم' };
+  const CAT_LABELS = { work:'💼 شغل', health:'💊 صحة', personal:'⭐ شخصي', finance:'💰 مالي', other:'📌 أخرى' };
+  const JS_DAY_MAP = { 0:'sun',1:'mon',2:'tue',3:'wed',4:'thu',5:'fri',6:'sat' };
+
+  function getTodayKey() { return JS_DAY_MAP[new Date().getDay()]; }
+
+  // ====== Render ======
+  function render() {
+    const list = document.getElementById('reminderList');
+    const todayKey = getTodayKey();
+    let filtered = reminders;
+
+    if (activeFilter !== 'all') {
+      filtered = reminders.filter(r => r.days.includes(activeFilter) || (activeFilter === todayKey && r.days.includes('daily')));
+    }
+
+    // Sort by time
+    filtered = [...filtered].sort((a,b) => a.time.localeCompare(b.time));
+
+    const totalCount = reminders.length;
+    const todayCount = reminders.filter(r => r.days.includes(todayKey) || r.days.includes('daily')).length;
+    const weekCount = reminders.filter(r => r.days.length > 0).length;
+
+    document.getElementById('totalCount').textContent = totalCount;
+    document.getElementById('todayCount').textContent = todayCount;
+    document.getElementById('weekCount').textContent = weekCount;
+
+    const titleEl = document.getElementById('listTitle');
+    if (activeFilter === 'all') titleEl.textContent = `جميع المواعيد (${totalCount})`;
+    else titleEl.textContent = `مواعيد ${DAYS_AR[activeFilter] || ''} (${filtered.length})`;
+
+    if (filtered.length === 0) {
+      list.innerHTML = `<div class="empty">
+        <div class="empty-icon">📭</div>
+        <h3>مفيش مواعيد هنا</h3>
+        <p>اضغط على "موعد جديد" عشان تضيف</p>
+      </div>`;
+      return;
+    }
+
+    list.innerHTML = filtered.map(r => {
+      const daysText = r.days.map(d => DAYS_AR[d] || d).join(' • ');
+      return `<div class="reminder-card cat-${r.cat}">
+        <div class="card-top">
+          <div class="card-title">${r.title}</div>
+          <div class="card-actions">
+            <button class="icon-btn" onclick="editReminder('${r.id}')" title="تعديل">✏️</button>
+            <button class="icon-btn delete" onclick="deleteReminder('${r.id}')" title="حذف">🗑️</button>
+          </div>
+        </div>
+        <div class="card-meta">
+          <span class="badge badge-time">⏰ ${formatTime(r.time)}</span>
+          <span class="badge badge-days">📅 ${daysText}</span>
+          <span class="badge badge-cat-${r.cat}">${CAT_LABELS[r.cat]}</span>
+        </div>
+        ${r.note ? `<div class="card-note">${r.note}</div>` : ''}
+      </div>`;
+    }).join('');
+  }
+
+  function formatTime(t) {
+    if (!t) return '';
+    const [h, m] = t.split(':').map(Number);
+    const ampm = h < 12 ? 'ص' : 'م';
+    const h12 = h % 12 || 12;
+    return `${h12}:${String(m).padStart(2,'0')} ${ampm}`;
+  }
+
+  // ====== Modal ======
+  function openModal(id = null) {
+    editId = id;
+    document.getElementById('modalTitle').textContent = id ? '✏️ تعديل الموعد' : '📅 موعد جديد';
+    // reset
+    document.getElementById('titleInput').value = '';
+    document.getElementById('timeInput').value = '';
+    document.getElementById('noteInput').value = '';
+    document.getElementById('catInput').value = 'work';
+    document.querySelectorAll('.day-toggle').forEach(b => b.classList.remove('selected'));
+
+    if (id) {
+      const r = reminders.find(x => x.id === id);
+      if (r) {
+        document.getElementById('titleInput').value = r.title;
+        document.getElementById('timeInput').value = r.time;
+        document.getElementById('noteInput').value = r.note || '';
+        document.getElementById('catInput').value = r.cat;
+        r.days.forEach(d => {
+          const btn = document.querySelector(`.day-toggle[data-day="${d}"]`);
+          if (btn) btn.classList.add('selected');
+        });
+      }
+    }
+    document.getElementById('overlay').classList.add('open');
+  }
+
+  function closeModal() { document.getElementById('overlay').classList.remove('open'); }
+
+  function handleOverlayClick(e) {
+    if (e.target === document.getElementById('overlay')) closeModal();
+  }
+
+  function toggleDay(btn) {
+    if (btn.dataset.day === 'daily') {
+      const isSelected = btn.classList.contains('selected');
+      document.querySelectorAll('.day-toggle').forEach(b => b.classList.remove('selected'));
+      if (!isSelected) btn.classList.add('selected');
+    } else {
+      document.querySelector('.day-toggle[data-day="daily"]').classList.remove('selected');
+      btn.classList.toggle('selected');
+    }
+  }
+
+  function saveReminder() {
+    const title = document.getElementById('titleInput').value.trim();
+    const time = document.getElementById('timeInput').value;
+    const days = [...document.querySelectorAll('.day-toggle.selected')].map(b => b.dataset.day);
+    const cat = document.getElementById('catInput').value;
+    const note = document.getElementById('noteInput').value.trim();
+
+    if (!title) { alert('اكتب اسم الموعد'); return; }
+    if (!time) { alert('اختار الوقت'); return; }
+    if (days.length === 0) { alert('اختار على الأقل يوم واحد'); return; }
+
+    if (editId) {
+      const idx = reminders.findIndex(r => r.id === editId);
+      if (idx !== -1) reminders[idx] = { ...reminders[idx], title, time, days, cat, note };
+    } else {
+      reminders.push({ id: Date.now().toString(), title, time, days, cat, note });
+    }
+
+    localStorage.setItem('reminders', JSON.stringify(reminders));
+    scheduleNotifications();
+    closeModal();
+    render();
+  }
+
+  function editReminder(id) { openModal(id); }
+
+  function deleteReminder(id) {
+    if (!confirm('تحذف الموعد ده؟')) return;
+    reminders = reminders.filter(r => r.id !== id);
+    localStorage.setItem('reminders', JSON.stringify(reminders));
+    render();
+  }
+
+  // ====== Day Filter ======
+  document.getElementById('dayFilter').addEventListener('click', e => {
+    const chip = e.target.closest('.day-chip');
+    if (!chip) return;
+    document.querySelectorAll('.day-chip').forEach(c => c.classList.remove('active'));
+    chip.classList.add('active');
+    activeFilter = chip.dataset.day;
+    render();
+  });
+
+  // ====== Notifications ======
+  function requestNotifPermission() {
+    Notification.requestPermission().then(p => {
+      if (p === 'granted') {
+        document.getElementById('notifBanner').style.display = 'none';
+        scheduleNotifications();
+      }
+    });
+  }
+
+  function scheduleNotifications() {
+    if (!('serviceWorker' in navigator) || Notification.permission !== 'granted') return;
+    // Schedule next alarms via SW
+    navigator.serviceWorker.ready.then(sw => {
+      sw.active && sw.active.postMessage({ type: 'SCHEDULE', reminders });
+    });
+  }
+
+  function checkNotifBanner() {
+    if ('Notification' in window && Notification.permission === 'default') {
+      document.getElementById('notifBanner').style.display = 'flex';
+    }
+  }
+
+  // ====== PWA Install ======
+  let deferredPrompt;
+  window.addEventListener('beforeinstallprompt', e => {
+    e.preventDefault();
+    deferredPrompt = e;
+    document.getElementById('installBtn').style.display = 'flex';
+    document.getElementById('installGuide').style.display = 'none';
+  });
+
+  document.getElementById('installBtn').addEventListener('click', () => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      deferredPrompt.userChoice.then(() => {
+        deferredPrompt = null;
+        document.getElementById('installBtn').style.display = 'none';
+      });
+    }
+  });
+
+  function showInstallGuide() {
+    const guide = document.getElementById('installGuide');
+    const text = document.getElementById('guideText');
+    const ua = navigator.userAgent;
+    if (/iPad|iPhone|iPod/.test(ua)) {
+      text.innerHTML = `على <strong>iPhone/iPad</strong>: افتح التطبيق في Safari ← اضغط على زر المشاركة ⬆️ ← اختار <strong>"Add to Home Screen"</strong> ← اضغط Add`;
+      guide.style.display = 'block';
+    } else if (/Android/.test(ua) && !deferredPrompt) {
+      text.innerHTML = `على <strong>Android</strong>: افتح التطبيق في Chrome ← اضغط على النقاط الثلاث ⋮ ← اختار <strong>"Add to Home Screen"</strong>`;
+      guide.style.display = 'block';
+    }
+  }
+
+  // ====== Service Worker ======
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js').then(() => {
+      scheduleNotifications();
+    }).catch(() => {});
+  }
+
+  // ====== Init ======
+  checkNotifBanner();
+  showInstallGuide();
+  render();
+
+  // Highlight today's filter automatically
+  const todayKey = getTodayKey();
+  const todayChip = document.querySelector(`.day-chip[data-day="${todayKey}"]`);
+  // keep "all" selected by default but you can auto-select today:
+  // if (todayChip) { document.querySelectorAll('.day-chip').forEach(c=>c.classList.remove('active')); todayChip.classList.add('active'); activeFilter = todayKey; render(); }
+</script>
+</body>
+</html>
